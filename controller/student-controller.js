@@ -6,6 +6,9 @@ const nodemailer = require("nodemailer");
 let ejs = require("ejs");
 const path = require("path")
 
+
+
+
 async function getstudent(req, res){
 
     console.log(req.query);
@@ -13,6 +16,8 @@ async function getstudent(req, res){
     const pagination = req.query.pagination;
     const page = pagination.current;
     const pageItems = pagination.pageSize;
+  
+ 
 
     const sortField = req.query.sortField ?? 'name'
     const sortOrder = (req.query.sortOrder ?? 'ascend') === 'ascend' ? 1 : -1
@@ -76,14 +81,14 @@ if(await StudentDetails.findOne({email: value.email})){
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: "aju@spericorn.com", // generated ethereal user
-      pass: "GIQLqEfDHhXVOT4Y", // generated ethereal password
+      user: process.env.MAIL_USERNAME, // generated ethereal user
+      pass: process.env.MAIL_PASSWORD, // generated ethereal password
     },
   });
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: 'aju@spericorn.com', // sender address
+    from: process.env.MAIL_USERNAME, // sender address
     to: Student.email, // list of receivers
     subject: "Student details Added", // Subject line
     text: "Hello world?", // plain text body
@@ -129,14 +134,14 @@ async function updateStudent(req, res){
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: "aju@spericorn.com", // generated ethereal user
-        pass: "GIQLqEfDHhXVOT4Y", // generated ethereal password
+        user: process.env.MAIL_USERNAME, // generated ethereal user
+      pass: process.env.MAIL_PASSWORD, // generated ethereal password
       },
     });
   
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: 'aju@spericorn.com', // sender address
+      from: process.env.MAIL_USERNAME, // sender address
       to: student.email, // list of receivers
       subject: "Student details updated", // Subject line
       text: "Hello world?", // plain text body
@@ -168,15 +173,15 @@ async function deleteStudent(req, res){
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: "aju@spericorn.com", // generated ethereal user
-        pass: "GIQLqEfDHhXVOT4Y", // generated ethereal password
+        user: process.env.MAIL_USERNAME, // generated ethereal user
+      pass: process.env.MAIL_PASSWORD, // generated ethereal password
       },
     });
   
   
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: 'aju@spericorn.com', // sender address
+      from: process.env.MAIL_USERNAME, // sender address
       to: student.email, // list of receivers
       subject: "Student details deleted", // Subject line
       text: "Hello world?", // plain text body
