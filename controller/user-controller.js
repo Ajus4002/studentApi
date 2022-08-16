@@ -6,7 +6,7 @@ var JOI = require('joi')
 async function register(req,res){
   const  schema = JOI.object({
         email:JOI.string().required().lowercase().email(),
-        password:JOI.string().required().min(6),
+        password:JOI.string().required().min(6).uppercase(1).lowercase(1).numeric(1).max(16)
        
     }).options({stripUnknown:true});
 

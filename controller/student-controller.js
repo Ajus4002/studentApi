@@ -1,6 +1,6 @@
 const Student = require('../model/student');
 const Joi = require('joi');
-const { string } = require('joi');
+const { string, object } = require('joi');
 const StudentDetails = require('../model/student');
 const nodemailer = require("nodemailer");
 let ejs = require("ejs");
@@ -10,7 +10,7 @@ const path = require("path")
 
 
 async function getstudent(req, res){
-
+try{
     console.log(req.query);
 
     const pagination = req.query.pagination;
@@ -41,10 +41,14 @@ async function getstudent(req, res){
 
     res .status(200).json({data, totalCount})
    
+} 
+catch (e) {
+  res.status(500).json({message:"Internal server error"})
+}
 }
 
 async function addStudent(req, res){
-
+ try{
     const schema = Joi.object({
 
         name: Joi.string().required(),
@@ -99,16 +103,18 @@ if(await StudentDetails.findOne({email: value.email})){
  return res.status(200)
            .json({message:'Student Detail Added Sussess fully'})
 }
-
-
+catch (e) {
+  res.status(500).json({message:"Internal server error"})
+}
+}
 
 async function updateStudent(req, res){
-   
+  try{ 
     const schema = Joi.object({
         name: Joi.string().required(),
         email: Joi.string().required().lowercase(),
         class: Joi.string().required(),
-        mobile: Joi.string().required(),
+        mobile: Joi.string().required().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/),
         address: Joi.string().required(),
         image: Joi.string()
 
@@ -122,12 +128,25 @@ async function updateStudent(req, res){
 
     }
     const student = await StudentDetails.findById(req.params.id)
+
+    const ChangedValue = {}
+    for (const key in value) {
+     if (student[key] !== value[key]) {
+       ChangedValue[key] = value[key]
+     }
+    }
+
+
     student.set(value)
     await student.save()
 
 
 
-    const htmlupdate = await ejs.renderFile(path.resolve(__dirname, '../mail-templates/student-update.html'), {student})
+
+ console.log(ChangedValue);
+
+
+    const htmlupdate = await ejs.renderFile(path.resolve(__dirname, '../mail-templates/student-update.html'), {student,ChangedValue})
 
     let transporter = nodemailer.createTransport({
       host: "smtp-relay.sendinblue.com",
@@ -153,15 +172,22 @@ async function updateStudent(req, res){
     return res .status(200)
             .json({message: 'student detail update Successfully'})
 }
-
+catch (e) {
+  res.status(500).json({message:"Internal server error"})
+}
+}
 
 async function getstudentdetails(req, res){
-
+try{
     const student = await StudentDetails.findById(req.params.id)
     res .status(200).json({data: student})
 }
-
+catch (e) {
+  message.error("Error found get student")
+}
+}
 async function deleteStudent(req, res){
+  try{
     const student = await StudentDetails.findById(req.params.id)
     student.isDeleted = true
     await student.save()
@@ -190,5 +216,9 @@ async function deleteStudent(req, res){
   
 
     res.status(200).json({message: "Student delete Successfully"})
+}
+catch (e) {
+  res.status(500).json({message:"Internal server error"})
+}
 }
 module.exports = {addStudent, getstudent, updateStudent, deleteStudent, getstudentdetails}

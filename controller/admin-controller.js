@@ -4,9 +4,10 @@ var JOI = require('joi')
 
 
 async function adminregister(req,res){
-    const  schema = JOI.object({
+   try{ const  schema = JOI.object({
           email:JOI.string().required().lowercase().email(),
-          password:JOI.string().required().min(6),
+          password:JOI.string().required().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/),
+          
          
       }).options({stripUnknown:true});
   
@@ -31,12 +32,15 @@ async function adminregister(req,res){
   .status(200)
   res.json({message:"success",success:"true",token, admin})
   }
-
-
+  catch (e) {
+    res.status(500).json({message:"Internal server error"})
+  }
+}
 
 
 
 async function login(req, res){
+    try{
     const email = req.body['email']
     const password = req.body['password']
 
@@ -65,6 +69,10 @@ async function login(req, res){
     return res.status(200)
     .json({message: "Data sent sucessfully",token: token,expiresIn: expiresIn, admin: admin})
 
+}
+catch (e) {
+    res.status(500).json({message:"Internal server error"})
+  }
 }
 
 module.exports = {login, adminregister}

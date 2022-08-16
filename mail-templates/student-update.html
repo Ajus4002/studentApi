@@ -11,7 +11,16 @@
 		<tbody>
 			<tr>
 				<td>Name</td>
+
+			
 				<td><%= student.name %></td>
+				
+				<% Object.keys(ChangedValue).forEach(key => { %>
+					
+					<td><%=  key %>: <%=  ChangedValue[key] %></td>
+
+				<% }) %>
+				
 			</tr>
 		</tbody>
 	</table>
